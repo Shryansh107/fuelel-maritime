@@ -43,6 +43,23 @@ export default function PoolingPage() {
     return { afterList, sumAfter };
   };
 
+  const validity = (() => {
+    const { afterList, sumAfter } = computeGreedy();
+    let ok = sumAfter >= 0;
+    let reason: string | null = ok ? null : 'Pool sum must be ≥ 0';
+    if (ok) {
+      for (const m of afterList) {
+        if (m.cb_before < 0 && m.cb_after < m.cb_before) {
+          ok = false; reason = `Deficit ship ${m.shipId} would exit worse`; break;
+        }
+        if (m.cb_before > 0 && m.cb_after < 0) {
+          ok = false; reason = `Surplus ship ${m.shipId} would exit negative`; break;
+        }
+      }
+    }
+    return { ok, reason, sumAfter, afterList };
+  })();
+
   const loadShips = async () => {
     setLoading(true);
     try {
@@ -59,7 +76,7 @@ export default function PoolingPage() {
 
   const createPool = async () => {
     // optimistic
-    const { afterList, sumAfter } = computeGreedy();
+    const { afterList, sumAfter } = validity;
     const prev = result;
     setResult({ poolId: -1, year: Number(year), members: afterList, sumAfter });
     try {
@@ -99,6 +116,7 @@ export default function PoolingPage() {
               <Tr>
                 <Th>shipId</Th>
                 <Th>cb_before</Th>
+                <Th>cb_after (preview)</Th>
               </Tr>
             </Thead>
             <Tbody>
@@ -110,6 +128,7 @@ export default function PoolingPage() {
                       onChange={e => setMembers(curr => curr.map((x, idx) => idx === i ? { ...x, cb_before: e.target.value } : x))}
                     />
                   </Td>
+                  <Td>{validity.afterList.find(x => x.shipId === m.shipId)?.cb_after.toFixed(2)}</Td>
                 </Tr>
               ))}
             </Tbody>
@@ -118,7 +137,11 @@ export default function PoolingPage() {
       )}
 
       {members.length > 0 && (
-        <Button onClick={createPool}>Create Pool</Button>
+        <div className="flex items-center gap-3">
+          <div className="text-sm">Pool Sum: <span className={validity.sumAfter >= 0 ? 'text-green-700' : 'text-red-700'}>{validity.sumAfter.toFixed(2)}</span></div>
+          {!validity.ok && <div className="text-sm text-red-700">{validity.reason}</div>}
+          <Button disabled={!validity.ok} onClick={createPool}>Create Pool</Button>
+        </div>
       )}
 
       {result && (

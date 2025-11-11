@@ -6,7 +6,7 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   size?: 'sm' | 'md';
 };
 
-const base = 'inline-flex items-center justify-center rounded-lg px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 cursor-pointer';
+const base = 'inline-flex items-center justify-center rounded-lg px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed';
 const variants: Record<NonNullable<ButtonProps['variant']>, string> = {
   default: 'bg-gray-900 text-white hover:bg-gray-800 focus-visible:ring-gray-400',
   secondary: 'bg-white text-gray-900 hover:bg-gray-50 focus-visible:ring-gray-300',
