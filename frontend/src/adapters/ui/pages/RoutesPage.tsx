@@ -145,7 +145,7 @@ export default function RoutesPage() {
                 <td className="p-2">{r.fuelConsumption.toFixed(0)}</td>
                 <td className="p-2">{r.distance.toFixed(0)}</td>
                 <td className="p-2">{r.totalEmissions.toFixed(0)}</td>
-                <td className="p-2"><button className={`btn ${r.isBaseline ? 'btn-success' : 'btn-ghost'}`} onClick={() => setBaseline(r.id)}>{r.isBaseline ? 'Baseline' : 'Set Baseline'}</button></td>
+                <td className="p-2"><button className={`btn w-32 ${r.isBaseline ? 'btn-success' : 'btn-ghost'}`} onClick={() => setBaseline(r.id)}>{r.isBaseline ? 'Baseline' : 'Set Baseline'}</button></td>
               </tr>
             ))}
           </tbody>
