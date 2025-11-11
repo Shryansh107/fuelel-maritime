@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { api } from '../../infrastructure/api';
 import { useToast } from '../../../shared/toast/ToastProvider';
 import { Skeleton } from '../../../shared/ui/Skeleton';
@@ -107,10 +107,10 @@ export default function ComparePage() {
 
 type ChartItem = { id: string; value: number };
 function ChartBaselineVsRoutes({ baseline, items }: { baseline: number | null; items: ChartItem[] }) {
-  const containerRef = React.useRef<HTMLDivElement | null>(null);
-  const [size, setSize] = React.useState<{ width: number; height: number }>({ width: 600, height: 300 });
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [size, setSize] = useState<{ width: number; height: number }>({ width: 600, height: 300 });
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!containerRef.current) return;
     const el = containerRef.current;
     const obs = new ResizeObserver(() => {
