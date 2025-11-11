@@ -125,19 +125,37 @@ function ChartBaselineVsRoutes({ baseline, items }: { baseline: number | null; i
   const width = Math.max(360, size.width);
   const height = Math.max(180, size.height);
   const maxValue = Math.max(baseline ?? 0, ...items.map(i => i.value)) || 1;
-  const barWidth = 22;
-  const gap = 18;
+  const barWidth = 26;
+  const gap = 24; // gap between baseline and route in a group
   const groupWidth = baseline !== null ? barWidth * 2 + gap : barWidth;
-  const startX = padding;
+  const innerWidth = width - padding * 2;
+  const totalGroupsWidth = items.length * groupWidth + (items.length - 1) * gap;
+  const startX = padding + Math.max(0, (innerWidth - totalGroupsWidth) / 2);
   const baselineColor = '#000000'; // black
-  const routeColor = '#4b5563'; // gray-600
+  const routeColor = '#6b7280'; // gray-500
+
+  // simple y ticks
+  const ticks = 4;
+  const step = Math.ceil(maxValue / ticks);
+  const tickValues = Array.from({ length: ticks + 1 }, (_, i) => i * step);
 
   return (
     <div ref={containerRef} className="w-full h-full">
       <svg width={width} height={height} role="img" aria-label="GHG Intensity chart">
-        {/* axes */}
+        {/* axes and grid */}
         <line x1={padding} y1={height - padding} x2={width - padding} y2={height - padding} stroke="#e5e7eb" />
         <line x1={padding} y1={padding} x2={padding} y2={height - padding} stroke="#e5e7eb" />
+        {tickValues.map((tv) => {
+          const y = height - padding - (tv / Math.max(1, tickValues[tickValues.length - 1])) * (height - padding * 2);
+          return (
+            <g key={`tick-${tv}`}>
+              <line x1={padding} y1={y} x2={width - padding} y2={y} stroke="#f3f4f6" />
+              <text x={padding - 6} y={y + 3} fontSize="10" textAnchor="end" fill="#6b7280">
+                {tv}
+              </text>
+            </g>
+          );
+        })}
 
         {items.map((item, idx) => {
           const groupX = startX + idx * (groupWidth + gap);
@@ -151,29 +169,18 @@ function ChartBaselineVsRoutes({ baseline, items }: { baseline: number | null; i
               {baseline !== null && (
                 <rect x={groupX} y={baseY} width={barWidth} height={baseH} fill={baselineColor} rx="3" />
               )}
-              <rect x={groupX + (baseline !== null ? barWidth + 4 : 0)} y={routeY} width={barWidth} height={routeH} fill={routeColor} rx="3" />
-              {/* labels */}
-              <text x={groupX + (baseline !== null ? (barWidth + 4) : 0) + barWidth / 2} y={height - padding + 12} textAnchor="middle" fontSize="10" fill="#374151">
+              <rect x={groupX + (baseline !== null ? barWidth + gap : 0)} y={routeY} width={barWidth} height={routeH} fill={routeColor} rx="3" />
+              {/* x labels */}
+              <text x={groupX + (baseline !== null ? (barWidth + gap) : 0) + barWidth / 2} y={height - padding + 12} textAnchor="middle" fontSize="10" fill="#374151">
                 {item.id}
               </text>
-              {/* numeric value labels */}
-              {baseline !== null && baseH > 0 && (
-                <text
-                  x={groupX + barWidth / 2}
-                  y={Math.max(padding + 10, baseY - 4)}
-                  textAnchor="middle"
-                  fontSize="10"
-                  fill="#111827"
-                >
-                  {baseline.toFixed(2)}
-                </text>
-              )}
+              {/* numeric value labels (route only to reduce clutter) */}
               {routeH > 0 && (
                 <text
-                  x={groupX + (baseline !== null ? barWidth + 4 : 0) + barWidth / 2}
-                  y={Math.max(padding + 10, routeY - 4)}
+                  x={groupX + (baseline !== null ? barWidth + gap : 0) + barWidth / 2}
+                  y={Math.max(padding + 12, routeY - 6)}
                   textAnchor="middle"
-                  fontSize="10"
+                  fontSize="11"
                   fill="#111827"
                 >
                   {item.value.toFixed(2)}
