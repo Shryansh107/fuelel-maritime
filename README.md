@@ -42,13 +42,14 @@ Prerequisites:
 - Docker + Docker Compose
 
 ### Backend
-1. Copy env:
+1. Create env file `backend/.env` with:
    ```bash
-   cp backend/.env.example backend/.env
+   DATABASE_URL="postgresql://fueluser:fuelpass@localhost:5432/fueleu?schema=public"
+   PORT=4000
    ```
 2. Start Postgres:
    ```bash
-   docker compose -f backend/docker-compose.yml up -d
+   docker-compose -f backend/docker-compose.yml up -d
    ```
 3. Install and migrate:
    ```bash
