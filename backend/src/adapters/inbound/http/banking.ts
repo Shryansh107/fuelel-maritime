@@ -4,6 +4,18 @@ import { prisma } from '../../../infrastructure/db/prisma.js';
 
 export const bankingRouter = Router();
 
+bankingRouter.get('/filters', async (_req, res) => {
+  const sc = await prisma.shipCompliance.findMany({ select: { shipId: true, year: true } });
+  const be = await prisma.bankEntry.findMany({ select: { shipId: true, year: true } });
+  const shipSet = new Set<string>();
+  const yearSet = new Set<number>();
+  for (const r of sc) { shipSet.add(r.shipId); yearSet.add(r.year); }
+  for (const r of be) { shipSet.add(r.shipId); yearSet.add(r.year); }
+  const shipIds = Array.from(shipSet).sort();
+  const years = Array.from(yearSet).sort((a, b) => a - b);
+  res.json({ shipIds, years });
+});
+
 bankingRouter.get('/records', async (req, res) => {
   const shipId = req.query.shipId as string | undefined;
   const year = req.query.year ? Number(req.query.year) : undefined;

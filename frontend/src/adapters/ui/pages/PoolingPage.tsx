@@ -8,6 +8,7 @@ import { Card } from '../../../components/ui/card';
 import { Input } from '../../../components/ui/input';
 import { Button } from '../../../components/ui/button';
 import { Table, Thead, Tbody, Tr, Th, Td } from '../../../components/ui/table';
+import { Select } from '../../../components/ui/select';
 
 type AdjustedShip = { shipId: string; year: number; cb_before: number; bankedSum: number; cb_after: number };
 type PoolMember = { shipId: string; cb_before: number; cb_after: number };
@@ -97,7 +98,8 @@ export default function PoolingPage() {
     <div className="p-4">
       <h2 className="mb-4">Pooling</h2>
       <div className="flex gap-2 mb-4">
-        <Input className="w-28" placeholder="Year" value={year} onChange={e => setYear(e.target.value)} />
+        {/* Use years from routes/filters if available */}
+        <YearSelect value={year} onChange={setYear} />
         <Button onClick={loadShips}>Load Ships</Button>
       </div>
 
@@ -171,6 +173,28 @@ export default function PoolingPage() {
         </div>
       )}
     </div>
+  );
+}
+
+function YearSelect({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const [years, setYears] = useState<number[]>([]);
+  useEffect(() => {
+    (async () => {
+      try {
+        const f = await api.get<{ vesselTypes: string[]; fuelTypes: string[]; years: number[] }>('/routes/filters');
+        setYears(f.years);
+      } catch {
+        setYears([]);
+      }
+    })();
+  }, []);
+  if (years.length === 0) {
+    return <Input className="w-28" placeholder="Year" value={value} onChange={e => onChange(e.target.value)} />;
+  }
+  return (
+    <Select className="w-28" value={value} onChange={e => onChange(e.target.value)}>
+      {years.map(y => <option key={y} value={String(y)}>{y}</option>)}
+    </Select>
   );
 }
 

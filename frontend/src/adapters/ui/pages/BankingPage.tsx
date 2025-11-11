@@ -5,6 +5,7 @@ import { Icons } from '../../../shared/icons';
 import { Card } from '../../../components/ui/card';
 import { Input } from '../../../components/ui/input';
 import { Button } from '../../../components/ui/button';
+import { Select } from '../../../components/ui/select';
 
 type Adjusted =
   | { shipId: string; year: number; cb_before: number; bankedSum: number; cb_after: number }
@@ -17,6 +18,22 @@ export default function BankingPage() {
   const [adjusted, setAdjusted] = useState<Adjusted | null>(null);
   const toast = useToast();
   const [busy, setBusy] = useState(false);
+  const [shipOptions, setShipOptions] = useState<string[]>([]);
+  const [yearOptions, setYearOptions] = useState<number[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const f = await api.get<{ shipIds: string[]; years: number[] }>('/banking/filters');
+        setShipOptions(f.shipIds);
+        setYearOptions(f.years);
+        if (f.shipIds.length > 0) setShipId(f.shipIds[0]);
+        if (f.years.length > 0) setYear(String(f.years[0]));
+      } catch (e) {
+        // ignore
+      }
+    })();
+  }, []);
 
   const computeCB = async () => {
     setBusy(true);
@@ -93,8 +110,20 @@ export default function BankingPage() {
 
       <Card className="p-4 mb-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          <Input className="w-full" placeholder="Ship ID" value={shipId} onChange={e => setShipId(e.target.value)} />
-          <Input className="w-full" placeholder="Year" value={year} onChange={e => setYear(e.target.value)} />
+          {shipOptions.length > 0 ? (
+            <Select className="w-full" value={shipId} onChange={e => setShipId(e.target.value)}>
+              {shipOptions.map(s => <option key={s} value={s}>{s}</option>)}
+            </Select>
+          ) : (
+            <Input className="w-full" placeholder="Ship ID" value={shipId} onChange={e => setShipId(e.target.value)} />
+          )}
+          {yearOptions.length > 0 ? (
+            <Select className="w-full" value={year} onChange={e => setYear(e.target.value)}>
+              {yearOptions.map(y => <option key={y} value={y}>{y}</option>)}
+            </Select>
+          ) : (
+            <Input className="w-full" placeholder="Year" value={year} onChange={e => setYear(e.target.value)} />
+          )}
           <Input className="w-full" placeholder="Amount" value={amount} onChange={e => setAmount(e.target.value)} />
           <div className="flex gap-2">
             <Button className="w-full" onClick={computeCB}><Icons.Calculator className="mr-2" /> Compute</Button>
