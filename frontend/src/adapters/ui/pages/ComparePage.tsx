@@ -40,7 +40,7 @@ export default function ComparePage() {
   useEffect(() => { load(); }, []);
 
   return (
-    <div className="p-4 min-h-screen flex flex-col">
+    <div className="p-4">
       <div className="mb-4 flex items-center justify-between">
         <h2>Compare</h2>
         {data && (
@@ -59,8 +59,8 @@ export default function ComparePage() {
       )}
       {!loading && data && data.comparisons.length === 0 && <EmptyState title="No comparison data" message="Set a baseline or add routes." />}
       {!loading && data && data.comparisons.length > 0 && (
-        <div className="space-y-6 flex-1 flex flex-col">
-          <Card className="overflow-auto">
+        <div className="space-y-6">
+          <Card className="overflow-auto max-h-80">
             <Table>
               <Thead>
                 <Tr>
@@ -86,7 +86,7 @@ export default function ComparePage() {
           </Card>
 
           {/* Responsive bar chart filling leftover space */}
-          <Card className="p-4 flex-1 h-full">
+          <Card className="p-4 h-64">
             <div className="flex items-center justify-between mb-3">
               <div className="text-sm font-medium">GHG Intensity Comparison</div>
               <div className="flex items-center gap-4 text-xs">
