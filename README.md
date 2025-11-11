@@ -41,6 +41,17 @@ Prerequisites:
 - Node.js 20+
 - Docker + Docker Compose
 
+### Environment
+- Backend requires `backend/.env`:
+  ```bash
+  DATABASE_URL="postgresql://fueluser:fuelpass@localhost:5432/fueleu?schema=public"
+  PORT=4000
+  ```
+- Frontend can point to backend via `VITE_API_URL` (optional). Defaults to `http://localhost:4000`:
+  ```bash
+  echo "VITE_API_URL=http://localhost:4000" > frontend/.env
+  ```
+
 ### Backend
 1. Create env file `backend/.env` with:
    ```bash
@@ -51,10 +62,11 @@ Prerequisites:
    ```bash
    docker-compose -f backend/docker-compose.yml up -d
    ```
-3. Install and migrate:
+3. Install, generate client, migrate, and seed:
    ```bash
    cd backend
    npm install
+   npx prisma generate
    npm run prisma:migrate
    npm run prisma:seed
    npm run dev
@@ -69,19 +81,24 @@ npm run dev
 
 ## Scripts (summary)
 - Backend:
+  - `npm run prisma:migrate` – run migrations
+  - `npm run prisma:seed` – seed database
   - `npm run dev` – start dev server
   - `npm run build` – build TypeScript
   - `npm run test` – run tests
-  - `npm run prisma:migrate` – run migrations
-  - `npm run prisma:seed` – seed database
 - Frontend:
   - `npm run dev` – start Vite dev server
   - `npm run build` – build app
   - `npm run test` – run tests
 
 ## Testing
-- Backend: unit (core use-cases), integration (HTTP via Supertest)
-- Frontend: unit (use-cases/components)
+- Backend (Vitest + Supertest):
+  ```bash
+  cd backend
+  npm test
+  ```
+  Integration tests mock Prisma to avoid a live DB; unit tests cover CB math.
+- Frontend: placeholder (can be added with Vitest/RTL as needed).
 
 ## Notes
 - In conflicts between earlier chat guidance and the brief, the brief takes precedence.
