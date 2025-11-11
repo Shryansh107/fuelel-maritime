@@ -29,7 +29,7 @@ model ShipCompliance {
   year     Int
   cbGco2eq Float  @map("cb_gco2eq")
 
-  @@index([shipId, year])
+  @@unique([shipId, year])
   @@map("ship_compliance")
 }
 
