@@ -35,30 +35,30 @@ export default function ComparePage() {
 
   return (
     <div className="p-4">
-      <h2 className="text-xl font-semibold mb-4">Compare</h2>
+      <h2 className="mb-4">Compare</h2>
       {loading && <div>Loading…</div>}
       {data && (
         <div className="space-y-4">
           <div className="text-sm text-gray-700">Target: {data.target.toFixed(4)} gCO₂e/MJ</div>
-          <div className="overflow-auto">
-            <table className="min-w-full text-sm border">
-              <thead className="bg-gray-100">
+          <div className="card overflow-auto">
+            <table className="min-w-full text-sm">
+              <thead>
                 <tr>
-                  <th className="p-2 border">routeId</th>
-                  <th className="p-2 border">baseline ghgIntensity</th>
-                  <th className="p-2 border">comparison ghgIntensity</th>
-                  <th className="p-2 border">% diff</th>
-                  <th className="p-2 border">compliant</th>
+                  <th className="p-2">routeId</th>
+                  <th className="p-2">baseline ghgIntensity</th>
+                  <th className="p-2">comparison ghgIntensity</th>
+                  <th className="p-2">% diff</th>
+                  <th className="p-2">compliant</th>
                 </tr>
               </thead>
               <tbody>
                 {data.comparisons.map(c => (
                   <tr key={c.route.id} className="odd:bg-white even:bg-gray-50">
-                    <td className="p-2 border">{c.route.routeId}</td>
-                    <td className="p-2 border">{data.baseline?.ghgIntensity.toFixed(2) ?? '-'}</td>
-                    <td className="p-2 border">{c.route.ghgIntensity.toFixed(2)}</td>
-                    <td className="p-2 border">{c.percentDiff.toFixed(2)}%</td>
-                    <td className="p-2 border">{c.compliant ? '✅' : '❌'}</td>
+                    <td className="p-2">{c.route.routeId}</td>
+                    <td className="p-2">{data.baseline?.ghgIntensity.toFixed(2) ?? '-'}</td>
+                    <td className="p-2">{c.route.ghgIntensity.toFixed(2)}</td>
+                    <td className="p-2">{c.percentDiff.toFixed(2)}%</td>
+                    <td className="p-2">{c.compliant ? '✅' : '❌'}</td>
                   </tr>
                 ))}
               </tbody>

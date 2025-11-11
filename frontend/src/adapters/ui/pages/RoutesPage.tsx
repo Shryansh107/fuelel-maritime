@@ -51,43 +51,43 @@ export default function RoutesPage() {
 
   return (
     <div className="p-4">
-      <h2 className="text-xl font-semibold mb-4">Routes</h2>
+      <h2 className="mb-4">Routes</h2>
       <div className="flex gap-2 mb-4">
-        <input className="border px-2 py-1" placeholder="Vessel Type" value={filters.vesselType ?? ''} onChange={e => setFilters(f => ({ ...f, vesselType: e.target.value || undefined }))} />
-        <input className="border px-2 py-1" placeholder="Fuel Type" value={filters.fuelType ?? ''} onChange={e => setFilters(f => ({ ...f, fuelType: e.target.value || undefined }))} />
-        <input className="border px-2 py-1" placeholder="Year" value={filters.year ?? ''} onChange={e => setFilters(f => ({ ...f, year: e.target.value || undefined }))} />
-        <button className="px-3 py-1 rounded bg-gray-900 text-white" onClick={load}>Filter</button>
+        <input className="w-40" placeholder="Vessel Type" value={filters.vesselType ?? ''} onChange={e => setFilters(f => ({ ...f, vesselType: e.target.value || undefined }))} />
+        <input className="w-40" placeholder="Fuel Type" value={filters.fuelType ?? ''} onChange={e => setFilters(f => ({ ...f, fuelType: e.target.value || undefined }))} />
+        <input className="w-28" placeholder="Year" value={filters.year ?? ''} onChange={e => setFilters(f => ({ ...f, year: e.target.value || undefined }))} />
+        <button className="btn btn-primary" onClick={load}>Filter</button>
       </div>
       {loading && <div>Loading…</div>}
-      <div className="overflow-auto">
-        <table className="min-w-full text-sm border">
-          <thead className="bg-gray-100">
+      <div className="card overflow-auto">
+        <table className="min-w-full text-sm">
+          <thead>
             <tr>
-              <th className="p-2 border">routeId</th>
-              <th className="p-2 border">vesselType</th>
-              <th className="p-2 border">fuelType</th>
-              <th className="p-2 border">year</th>
-              <th className="p-2 border">ghgIntensity</th>
-              <th className="p-2 border">fuelConsumption (t)</th>
-              <th className="p-2 border">distance (km)</th>
-              <th className="p-2 border">totalEmissions (t)</th>
-              <th className="p-2 border">baseline</th>
-              <th className="p-2 border">actions</th>
+              <th className="p-2">routeId</th>
+              <th className="p-2">vesselType</th>
+              <th className="p-2">fuelType</th>
+              <th className="p-2">year</th>
+              <th className="p-2">ghgIntensity</th>
+              <th className="p-2">fuelConsumption (t)</th>
+              <th className="p-2">distance (km)</th>
+              <th className="p-2">totalEmissions (t)</th>
+              <th className="p-2">baseline</th>
+              <th className="p-2">actions</th>
             </tr>
           </thead>
           <tbody>
             {rows.map(r => (
               <tr key={r.id} className="odd:bg-white even:bg-gray-50">
-                <td className="p-2 border">{r.routeId}</td>
-                <td className="p-2 border">{r.vesselType}</td>
-                <td className="p-2 border">{r.fuelType}</td>
-                <td className="p-2 border">{r.year}</td>
-                <td className="p-2 border">{r.ghgIntensity.toFixed(2)}</td>
-                <td className="p-2 border">{r.fuelConsumption.toFixed(0)}</td>
-                <td className="p-2 border">{r.distance.toFixed(0)}</td>
-                <td className="p-2 border">{r.totalEmissions.toFixed(0)}</td>
-                <td className="p-2 border">{r.isBaseline ? '✅' : '❌'}</td>
-                <td className="p-2 border"><button className="px-2 py-1 rounded bg-gray-200" onClick={() => setBaseline(r.id)}>Set Baseline</button></td>
+                <td className="p-2">{r.routeId}</td>
+                <td className="p-2">{r.vesselType}</td>
+                <td className="p-2">{r.fuelType}</td>
+                <td className="p-2">{r.year}</td>
+                <td className="p-2">{r.ghgIntensity.toFixed(2)}</td>
+                <td className="p-2">{r.fuelConsumption.toFixed(0)}</td>
+                <td className="p-2">{r.distance.toFixed(0)}</td>
+                <td className="p-2">{r.totalEmissions.toFixed(0)}</td>
+                <td className="p-2">{r.isBaseline ? '✅' : '❌'}</td>
+                <td className="p-2"><button className="btn btn-ghost" onClick={() => setBaseline(r.id)}>Set Baseline</button></td>
               </tr>
             ))}
           </tbody>

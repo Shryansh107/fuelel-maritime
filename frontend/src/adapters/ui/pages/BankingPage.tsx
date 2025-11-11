@@ -58,18 +58,18 @@ export default function BankingPage() {
 
   return (
     <div className="p-4">
-      <h2 className="text-xl font-semibold mb-4">Banking</h2>
+      <h2 className="mb-4">Banking</h2>
       <div className="flex flex-wrap gap-2 mb-4">
-        <input className="border px-2 py-1" placeholder="Ship ID" value={shipId} onChange={e => setShipId(e.target.value)} />
-        <input className="border px-2 py-1" placeholder="Year" value={year} onChange={e => setYear(e.target.value)} />
-        <input className="border px-2 py-1" placeholder="Amount" value={amount} onChange={e => setAmount(e.target.value)} />
-        <button className="px-3 py-1 rounded bg-gray-900 text-white" onClick={computeCB}>Compute CB</button>
-        <button className="px-3 py-1 rounded bg-gray-200" onClick={loadAdjusted}>Load Adjusted</button>
-        <button className="px-3 py-1 rounded bg-green-600 text-white" onClick={bank}>Bank</button>
-        <button className="px-3 py-1 rounded bg-blue-600 text-white" onClick={apply}>Apply</button>
+        <input className="w-44" placeholder="Ship ID" value={shipId} onChange={e => setShipId(e.target.value)} />
+        <input className="w-28" placeholder="Year" value={year} onChange={e => setYear(e.target.value)} />
+        <input className="w-32" placeholder="Amount" value={amount} onChange={e => setAmount(e.target.value)} />
+        <button className="btn btn-primary" onClick={computeCB}>Compute CB</button>
+        <button className="btn btn-ghost" onClick={loadAdjusted}>Load Adjusted</button>
+        <button className="btn btn-primary" onClick={bank}>Bank</button>
+        <button className="btn btn-primary" onClick={apply}>Apply</button>
       </div>
       {adj && (
-        <div className="text-sm">
+        <div className="card p-3 text-sm">
           <div>cb_before: {adj.cb_before.toFixed(2)}</div>
           <div>bankedSum: {adj.bankedSum.toFixed(2)}</div>
           <div>cb_after: {adj.cb_after.toFixed(2)}</div>

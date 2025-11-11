@@ -40,27 +40,27 @@ export default function PoolingPage() {
 
   return (
     <div className="p-4">
-      <h2 className="text-xl font-semibold mb-4">Pooling</h2>
+      <h2 className="mb-4">Pooling</h2>
       <div className="flex gap-2 mb-4">
-        <input className="border px-2 py-1" placeholder="Year" value={year} onChange={e => setYear(e.target.value)} />
-        <button className="px-3 py-1 rounded bg-gray-900 text-white" onClick={loadShips}>Load Ships</button>
+        <input className="w-28" placeholder="Year" value={year} onChange={e => setYear(e.target.value)} />
+        <button className="btn btn-primary" onClick={loadShips}>Load Ships</button>
       </div>
 
       {members.length > 0 && (
-        <div className="mb-4 overflow-auto">
-          <table className="min-w-full text-sm border">
-            <thead className="bg-gray-100">
+        <div className="mb-4 card overflow-auto">
+          <table className="min-w-full text-sm">
+            <thead>
               <tr>
-                <th className="p-2 border">shipId</th>
-                <th className="p-2 border">cb_before</th>
+                <th className="p-2">shipId</th>
+                <th className="p-2">cb_before</th>
               </tr>
             </thead>
             <tbody>
               {members.map((m, i) => (
                 <tr key={m.shipId} className="odd:bg-white even:bg-gray-50">
-                  <td className="p-2 border">{m.shipId}</td>
-                  <td className="p-2 border">
-                    <input className="border px-2 py-1 w-40" value={m.cb_before}
+                  <td className="p-2">{m.shipId}</td>
+                  <td className="p-2">
+                    <input className="w-40" value={m.cb_before}
                       onChange={e => setMembers(curr => curr.map((x, idx) => idx === i ? { ...x, cb_before: e.target.value } : x))}
                     />
                   </td>
@@ -72,28 +72,28 @@ export default function PoolingPage() {
       )}
 
       {members.length > 0 && (
-        <button className="px-3 py-1 rounded bg-blue-600 text-white" onClick={createPool}>Create Pool</button>
+        <button className="btn btn-primary" onClick={createPool}>Create Pool</button>
       )}
 
       {result && (
         <div className="mt-4">
           <div className="text-sm mb-2">Pool #{result.poolId} (year {result.year})</div>
           <div className="text-sm mb-2">Sum After: <span className={result.sumAfter >= 0 ? 'text-green-700' : 'text-red-700'}>{result.sumAfter.toFixed(2)}</span></div>
-          <div className="overflow-auto">
-            <table className="min-w-full text-sm border">
-              <thead className="bg-gray-100">
+          <div className="card overflow-auto">
+            <table className="min-w-full text-sm">
+              <thead>
                 <tr>
-                  <th className="p-2 border">shipId</th>
-                  <th className="p-2 border">cb_before</th>
-                  <th className="p-2 border">cb_after</th>
+                  <th className="p-2">shipId</th>
+                  <th className="p-2">cb_before</th>
+                  <th className="p-2">cb_after</th>
                 </tr>
               </thead>
               <tbody>
                 {result.members.map(m => (
                   <tr key={m.shipId} className="odd:bg-white even:bg-gray-50">
-                    <td className="p-2 border">{m.shipId}</td>
-                    <td className="p-2 border">{m.cb_before.toFixed(2)}</td>
-                    <td className="p-2 border">{m.cb_after.toFixed(2)}</td>
+                    <td className="p-2">{m.shipId}</td>
+                    <td className="p-2">{m.cb_before.toFixed(2)}</td>
+                    <td className="p-2">{m.cb_after.toFixed(2)}</td>
                   </tr>
                 ))}
               </tbody>

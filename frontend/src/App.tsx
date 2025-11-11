@@ -17,16 +17,16 @@ function App() {
           <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
             <h1 className="text-lg font-semibold">FuelEU Compliance Dashboard</h1>
             <nav className="flex gap-2">
-              <button className={`px-3 py-1 rounded ${tab === 'routes' ? 'bg-gray-900 text-white' : 'bg-gray-100'}`} onClick={() => setTab('routes')}>
+              <button className={`btn ${tab === 'routes' ? 'btn-primary' : 'btn-ghost'}`} onClick={() => setTab('routes')}>
                 Routes
               </button>
-              <button className={`px-3 py-1 rounded ${tab === 'compare' ? 'bg-gray-900 text-white' : 'bg-gray-100'}`} onClick={() => setTab('compare')}>
+              <button className={`btn ${tab === 'compare' ? 'btn-primary' : 'btn-ghost'}`} onClick={() => setTab('compare')}>
                 Compare
               </button>
-              <button className={`px-3 py-1 rounded ${tab === 'banking' ? 'bg-gray-900 text-white' : 'bg-gray-100'}`} onClick={() => setTab('banking')}>
+              <button className={`btn ${tab === 'banking' ? 'btn-primary' : 'btn-ghost'}`} onClick={() => setTab('banking')}>
                 Banking
               </button>
-              <button className={`px-3 py-1 rounded ${tab === 'pooling' ? 'bg-gray-900 text-white' : 'bg-gray-100'}`} onClick={() => setTab('pooling')}>
+              <button className={`btn ${tab === 'pooling' ? 'btn-primary' : 'btn-ghost'}`} onClick={() => setTab('pooling')}>
                 Pooling
               </button>
             </nav>
