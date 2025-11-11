@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { api } from '../../infrastructure/api';
 import { useToast } from '../../../shared/toast/ToastProvider';
 import { Skeleton } from '../../../shared/ui/Skeleton';
@@ -35,6 +35,25 @@ export default function RoutesPage() {
   const [filters, setFilters] = useState<{ vesselType?: string; fuelType?: string; year?: string }>({});
   const toast = useToast();
   const [options, setOptions] = useState<FilterOptions>({ vesselTypes: [], fuelTypes: [], years: [] });
+  const [sort, setSort] = useState<{ key?: 'year' | 'ghgIntensity' | 'fuelConsumption' | 'distance' | 'totalEmissions'; dir: 'asc' | 'desc' }>({});
+
+  const sortedRows = useMemo(() => {
+    const list = [...rows];
+    if (sort.key) {
+      list.sort((a, b) => {
+        const delta = (a[sort.key!] as number) - (b[sort.key!] as number);
+        return sort.dir === 'asc' ? delta : -delta;
+      });
+    }
+    return list;
+  }, [rows, sort]);
+
+  const toggleSort = (key: 'year' | 'ghgIntensity' | 'fuelConsumption' | 'distance' | 'totalEmissions') => {
+    setSort((curr) => {
+      if (curr.key !== key) return { key, dir: 'asc' };
+      return { key, dir: curr.dir === 'asc' ? 'desc' : 'asc' };
+    });
+  };
 
   const load = async () => {
     setLoading(true);
@@ -128,19 +147,19 @@ export default function RoutesPage() {
         <Table>
           <Thead>
             <Tr>
-              <Th>routeId</Th>
-              <Th>vesselType</Th>
-              <Th>fuelType</Th>
-              <Th>year</Th>
-              <Th>ghgIntensity</Th>
-              <Th>fuelConsumption (t)</Th>
-              <Th>distance (km)</Th>
-              <Th>totalEmissions (t)</Th>
-              <Th>actions</Th>
+              <Th>Route ID</Th>
+              <Th>Vessel Type</Th>
+              <Th>Fuel Type</Th>
+              <Th className="cursor-pointer select-none" onClick={() => toggleSort('year')}>Year {sort.key === 'year' ? (sort.dir === 'asc' ? '▲' : '▼') : ''}</Th>
+              <Th className="cursor-pointer select-none" onClick={() => toggleSort('ghgIntensity')}>GHG Intensity {sort.key === 'ghgIntensity' ? (sort.dir === 'asc' ? '▲' : '▼') : ''}</Th>
+              <Th className="cursor-pointer select-none" onClick={() => toggleSort('fuelConsumption')}>Fuel Consumption (t) {sort.key === 'fuelConsumption' ? (sort.dir === 'asc' ? '▲' : '▼') : ''}</Th>
+              <Th className="cursor-pointer select-none" onClick={() => toggleSort('distance')}>Distance (km) {sort.key === 'distance' ? (sort.dir === 'asc' ? '▲' : '▼') : ''}</Th>
+              <Th className="cursor-pointer select-none" onClick={() => toggleSort('totalEmissions')}>Total Emissions (t) {sort.key === 'totalEmissions' ? (sort.dir === 'asc' ? '▲' : '▼') : ''}</Th>
+              <Th>Actions</Th>
             </Tr>
           </Thead>
           <Tbody>
-            {rows.map(r => (
+            {sortedRows.map(r => (
               <Tr key={r.id} className="odd:bg-white even:bg-gray-50">
                 <Td>{r.routeId}</Td>
                 <Td>{r.vesselType}</Td>

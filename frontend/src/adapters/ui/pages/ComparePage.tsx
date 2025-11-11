@@ -41,7 +41,15 @@ export default function ComparePage() {
 
   return (
     <div className="p-4">
-      <h2 className="mb-4">Compare</h2>
+      <div className="mb-4 flex items-center justify-between">
+        <h2>Compare</h2>
+        {data && (
+          <Card className="px-3 py-2 border-blue-200 bg-blue-50 text-blue-800">
+            <div className="text-xs uppercase tracking-wide">Target (gCO₂e/MJ)</div>
+            <div className="text-sm font-semibold">{data.target.toFixed(4)}</div>
+          </Card>
+        )}
+      </div>
       {loading && (
         <Card className="p-4 space-y-2">
           <Skeleton className="h-5 w-1/2" />
@@ -53,16 +61,15 @@ export default function ComparePage() {
       {!loading && data && data.comparisons.length === 0 && <EmptyState title="No comparison data" message="Set a baseline or add routes." />}
       {!loading && data && data.comparisons.length > 0 && (
         <div className="space-y-4">
-          <div className="text-sm text-gray-700">Target: {data.target.toFixed(4)} gCO₂e/MJ</div>
           <Card className="overflow-auto">
             <Table>
               <Thead>
                 <Tr>
-                  <Th>routeId</Th>
-                  <Th>baseline ghgIntensity</Th>
-                  <Th>comparison ghgIntensity</Th>
-                  <Th>% diff</Th>
-                  <Th>compliant</Th>
+                  <Th>Route ID</Th>
+                  <Th>Baseline GHG Intensity</Th>
+                  <Th>Comparison GHG Intensity</Th>
+                  <Th>% Diff</Th>
+                  <Th>Compliant</Th>
                 </Tr>
               </Thead>
               <Tbody>
