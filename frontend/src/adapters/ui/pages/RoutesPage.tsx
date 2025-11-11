@@ -36,7 +36,7 @@ export default function RoutesPage() {
     } catch (e: any) {
       toast.error(e.message ?? 'Failed to load routes');
     } finally {
-      await sleep(300);
+      await sleep(150);
       setLoading(false);
     }
   };

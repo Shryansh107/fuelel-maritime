@@ -30,7 +30,7 @@ export default function ComparePage() {
     } catch (e: any) {
       toast.error(e.message ?? 'Failed to load comparisons');
     } finally {
-      await sleep(300);
+      await sleep(150);
       setLoading(false);
     }
   };

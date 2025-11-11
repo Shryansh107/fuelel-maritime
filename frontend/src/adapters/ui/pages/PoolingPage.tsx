@@ -48,7 +48,7 @@ export default function PoolingPage() {
     } catch (e: any) {
       toast.error(e.message ?? 'Failed to load ships');
     } finally {
-      await sleep(300);
+      await sleep(150);
       setLoading(false);
     }
   };
