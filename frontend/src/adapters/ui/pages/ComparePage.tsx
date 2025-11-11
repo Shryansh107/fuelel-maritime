@@ -44,10 +44,9 @@ export default function ComparePage() {
       <div className="mb-4 flex items-center justify-between">
         <h2>Compare</h2>
         {data && (
-          <Card className="px-3 py-2 border-blue-200 bg-blue-50 text-blue-800">
-            <div className="text-xs uppercase tracking-wide">Target (gCO₂e/MJ)</div>
-            <div className="text-sm font-semibold">{data.target.toFixed(4)}</div>
-          </Card>
+          <div className="px-3 py-1 rounded-md bg-blue-600 text-white font-semibold whitespace-nowrap">
+            Target: {data.target.toFixed(4)} gCO₂e/MJ
+          </div>
         )}
       </div>
       {loading && (
@@ -60,7 +59,7 @@ export default function ComparePage() {
       )}
       {!loading && data && data.comparisons.length === 0 && <EmptyState title="No comparison data" message="Set a baseline or add routes." />}
       {!loading && data && data.comparisons.length > 0 && (
-        <div className="space-y-4">
+        <div className="space-y-6">
           <Card className="overflow-auto">
             <Table>
               <Thead>
@@ -85,9 +84,69 @@ export default function ComparePage() {
               </Tbody>
             </Table>
           </Card>
+
+          {/* Simple SVG bar chart comparing baseline vs route ghgIntensity */}
+          <Card className="p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="text-sm font-medium">GHG Intensity Comparison</div>
+              <div className="flex items-center gap-4 text-xs">
+                <div className="flex items-center gap-1"><span className="inline-block h-2 w-4 bg-gray-800 rounded-sm" /> Baseline</div>
+                <div className="flex items-center gap-1"><span className="inline-block h-2 w-4 bg-blue-600 rounded-sm" /> Route</div>
+              </div>
+            </div>
+            <ChartBaselineVsRoutes
+              baseline={data.baseline?.ghgIntensity ?? null}
+              items={data.comparisons.map(c => ({ id: c.route.routeId, value: c.route.ghgIntensity }))}
+            />
+          </Card>
         </div>
       )}
     </div>
+  );
+}
+
+type ChartItem = { id: string; value: number };
+function ChartBaselineVsRoutes({ baseline, items }: { baseline: number | null; items: ChartItem[] }) {
+  const padding = 24;
+  const width = Math.max(360, items.length * 60 + padding * 2);
+  const height = 180;
+  const maxValue = Math.max(
+    baseline ?? 0,
+    ...items.map(i => i.value),
+  ) || 1;
+  const barWidth = 22;
+  const gap = 18;
+  const groupWidth = baseline !== null ? barWidth * 2 + gap : barWidth;
+  const startX = padding;
+  const baselineColor = '#111827'; // gray-900
+  const routeColor = '#2563eb'; // blue-600
+
+  return (
+    <svg width={width} height={height} role="img" aria-label="GHG Intensity chart">
+      {/* axes */}
+      <line x1={padding} y1={height - padding} x2={width - padding} y2={height - padding} stroke="#e5e7eb" />
+      <line x1={padding} y1={padding} x2={padding} y2={height - padding} stroke="#e5e7eb" />
+
+      {items.map((item, idx) => {
+        const groupX = startX + idx * (groupWidth + gap);
+        const routeH = (item.value / maxValue) * (height - padding * 2);
+        const routeY = height - padding - routeH;
+        const baseH = baseline !== null ? (baseline / maxValue) * (height - padding * 2) : 0;
+        const baseY = height - padding - baseH;
+        return (
+          <g key={item.id}>
+            {baseline !== null && (
+              <rect x={groupX} y={baseY} width={barWidth} height={baseH} fill={baselineColor} rx="3" />
+            )}
+            <rect x={groupX + (baseline !== null ? barWidth + 4 : 0)} y={routeY} width={barWidth} height={routeH} fill={routeColor} rx="3" />
+            {/* labels */}
+            <text x={groupX + (baseline !== null ? (barWidth + 4) : 0) + barWidth / 2} y={height - padding + 12} textAnchor="middle" fontSize="10" fill="#374151">
+              {item.id}
+            </text>
+          </g>
+        );
+      })}
+    </svg>
   );
 }
 
