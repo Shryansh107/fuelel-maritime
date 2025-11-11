@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../infrastructure/api';
+import { useToast } from '../../../shared/toast/ToastProvider';
 
 type RouteRow = {
   id: number;
@@ -17,12 +18,11 @@ type RouteRow = {
 export default function RoutesPage() {
   const [rows, setRows] = useState<RouteRow[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<{ vesselType?: string; fuelType?: string; year?: string }>({});
+  const toast = useToast();
 
   const load = async () => {
     setLoading(true);
-    setError(null);
     try {
       const params = new URLSearchParams();
       if (filters.vesselType) params.set('vesselType', filters.vesselType);
@@ -31,7 +31,7 @@ export default function RoutesPage() {
       const data = await api.get<RouteRow[]>(`/routes?${params.toString()}`);
       setRows(data);
     } catch (e: any) {
-      setError(e.message ?? 'Failed to load');
+      toast.error(e.message ?? 'Failed to load routes');
     } finally {
       setLoading(false);
     }
@@ -43,8 +43,9 @@ export default function RoutesPage() {
     try {
       await api.post(`/routes/${id}/baseline`, {});
       await load();
+      toast.success('Baseline updated');
     } catch (e: any) {
-      setError(e.message ?? 'Failed to set baseline');
+      toast.error(e.message ?? 'Failed to set baseline');
     }
   };
 
@@ -58,7 +59,6 @@ export default function RoutesPage() {
         <button className="px-3 py-1 rounded bg-gray-900 text-white" onClick={load}>Filter</button>
       </div>
       {loading && <div>Loading…</div>}
-      {error && <div className="text-red-600 text-sm mb-2">{error}</div>}
       <div className="overflow-auto">
         <table className="min-w-full text-sm border">
           <thead className="bg-gray-100">

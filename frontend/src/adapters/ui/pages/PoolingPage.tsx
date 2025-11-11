@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { api } from '../../infrastructure/api';
+import { useToast } from '../../../shared/toast/ToastProvider';
 
 type AdjustedShip = { shipId: string; year: number; cb_before: number; bankedSum: number; cb_after: number };
 type PoolMember = { shipId: string; cb_before: number; cb_after: number };
@@ -9,23 +10,21 @@ export default function PoolingPage() {
   const [year, setYear] = useState('2025');
   const [ships, setShips] = useState<AdjustedShip[]>([]);
   const [members, setMembers] = useState<Array<{ shipId: string; cb_before: string }>>([]);
-  const [msg, setMsg] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<PoolResponse | null>(null);
+  const toast = useToast();
 
   const loadShips = async () => {
-    setMsg(null); setError(null);
     try {
       const data = await api.get<AdjustedShip[]>(`/compliance/adjusted-cb?year=${encodeURIComponent(year)}`);
       setShips(data);
       setMembers(data.map(d => ({ shipId: d.shipId, cb_before: String(d.cb_before) })));
     } catch (e: any) {
-      setError(e.message ?? 'Failed to load ships');
+      toast.error(e.message ?? 'Failed to load ships');
     }
   };
 
   const createPool = async () => {
-    setMsg(null); setError(null); setResult(null);
+    setResult(null);
     try {
       const body = {
         year: Number(year),
@@ -33,9 +32,9 @@ export default function PoolingPage() {
       };
       const resp = await api.post<PoolResponse>('/pools', body);
       setResult(resp);
-      setMsg('Pool created.');
+      toast.success('Pool created');
     } catch (e: any) {
-      setError(e.message ?? 'Failed to create pool');
+      toast.error(e.message ?? 'Failed to create pool');
     }
   };
 
@@ -46,8 +45,6 @@ export default function PoolingPage() {
         <input className="border px-2 py-1" placeholder="Year" value={year} onChange={e => setYear(e.target.value)} />
         <button className="px-3 py-1 rounded bg-gray-900 text-white" onClick={loadShips}>Load Ships</button>
       </div>
-      {error && <div className="text-red-600 text-sm mb-2">{error}</div>}
-      {msg && <div className="text-green-700 text-sm mb-2">{msg}</div>}
 
       {members.length > 0 && (
         <div className="mb-4 overflow-auto">

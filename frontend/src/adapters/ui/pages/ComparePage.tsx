@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../infrastructure/api';
+import { useToast } from '../../../shared/toast/ToastProvider';
 
 type RouteRow = {
   id: number;
@@ -16,16 +17,15 @@ type ComparisonResponse = {
 export default function ComparePage() {
   const [data, setData] = useState<ComparisonResponse | null>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const toast = useToast();
 
   const load = async () => {
     setLoading(true);
-    setError(null);
     try {
       const resp = await api.get<ComparisonResponse>('/routes/comparison');
       setData(resp);
     } catch (e: any) {
-      setError(e.message ?? 'Failed to load');
+      toast.error(e.message ?? 'Failed to load comparisons');
     } finally {
       setLoading(false);
     }
@@ -37,7 +37,6 @@ export default function ComparePage() {
     <div className="p-4">
       <h2 className="text-xl font-semibold mb-4">Compare</h2>
       {loading && <div>Loading…</div>}
-      {error && <div className="text-red-600 text-sm mb-2">{error}</div>}
       {data && (
         <div className="space-y-4">
           <div className="text-sm text-gray-700">Target: {data.target.toFixed(4)} gCO₂e/MJ</div>
