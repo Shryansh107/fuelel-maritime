@@ -13,23 +13,30 @@ export default function BankingPage() {
   const [amount, setAmount] = useState('');
   const [adjusted, setAdjusted] = useState<Adjusted | null>(null);
   const toast = useToast();
+  const [busy, setBusy] = useState(false);
 
   const computeCB = async () => {
+    setBusy(true);
     try {
       await api.get(`/compliance/cb?shipId=${encodeURIComponent(shipId)}&year=${encodeURIComponent(year)}`);
       await loadAdjusted();
       toast.success('CB computed');
     } catch (e: any) {
       toast.error(e.message ?? 'Failed to compute CB');
+    } finally {
+      setBusy(false);
     }
   };
 
   const loadAdjusted = async () => {
+    setBusy(true);
     try {
       const res = await api.get<Adjusted>(`/compliance/adjusted-cb?shipId=${encodeURIComponent(shipId)}&year=${encodeURIComponent(year)}`);
       setAdjusted(res);
     } catch (e: any) {
       toast.error(e.message ?? 'Failed to load adjusted CB');
+    } finally {
+      setBusy(false);
     }
   };
 
@@ -42,12 +49,15 @@ export default function BankingPage() {
     const prev = adj;
     // optimistic: increase bankedSum and cb_after
     setAdjusted({ ...adj, bankedSum: adj.bankedSum + amt, cb_after: adj.cb_after + amt });
+    setBusy(true);
     try {
       await api.post('/banking/bank', { shipId, year: Number(year), amount: amt });
       toast.success('Banked successfully');
     } catch (e: any) {
       setAdjusted(prev);
       toast.error(e.message ?? 'Banking failed');
+    } finally {
+      setBusy(false);
     }
   };
 
@@ -60,12 +70,15 @@ export default function BankingPage() {
     const prev = adj;
     // optimistic: reduce bankedSum and increase cb_after
     setAdjusted({ ...adj, bankedSum: adj.bankedSum - amt, cb_after: adj.cb_after + amt });
+    setBusy(true);
     try {
       await api.post('/banking/apply', { shipId, year: Number(year), amount: amt });
       toast.success('Applied successfully');
     } catch (e: any) {
       setAdjusted(prev);
       toast.error(e.message ?? 'Apply failed');
+    } finally {
+      setBusy(false);
     }
   };
 
@@ -90,7 +103,13 @@ export default function BankingPage() {
           <button className="btn btn-primary" onClick={apply}><Icons.Upload className="mr-2" /> Apply</button>
         </div>
       </div>
-      {adj && (
+      {busy && (
+        <div className="card p-4 space-y-2">
+          <div className="text-sm text-gray-700">Loading…</div>
+          <div className="animate-pulse h-12 bg-gray-200 rounded-md" />
+        </div>
+      )}
+      {!busy && adj && (
         <div className="card p-4 text-sm">
           <div>cb_before: {adj.cb_before.toFixed(2)}</div>
           <div>bankedSum: {adj.bankedSum.toFixed(2)}</div>

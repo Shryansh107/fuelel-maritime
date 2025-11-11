@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { api } from '../../infrastructure/api';
 import { useToast } from '../../../shared/toast/ToastProvider';
+import { Skeleton } from '../../../shared/ui/Skeleton';
+import { EmptyState } from '../../../shared/ui/EmptyState';
+import { sleep } from '../../../shared/utils/sleep';
 
 type AdjustedShip = { shipId: string; year: number; cb_before: number; bankedSum: number; cb_after: number };
 type PoolMember = { shipId: string; cb_before: number; cb_after: number };
@@ -12,6 +15,7 @@ export default function PoolingPage() {
   const [members, setMembers] = useState<Array<{ shipId: string; cb_before: string }>>([]);
   const [result, setResult] = useState<PoolResponse | null>(null);
   const toast = useToast();
+  const [loading, setLoading] = useState(false);
 
   const computeGreedy = () => {
     const inputs = members.map(m => ({ shipId: m.shipId, cb_before: Number(m.cb_before) }));
@@ -36,12 +40,16 @@ export default function PoolingPage() {
   };
 
   const loadShips = async () => {
+    setLoading(true);
     try {
       const data = await api.get<AdjustedShip[]>(`/compliance/adjusted-cb?year=${encodeURIComponent(year)}`);
       setShips(data);
       setMembers(data.map(d => ({ shipId: d.shipId, cb_before: String(d.cb_before) })));
     } catch (e: any) {
       toast.error(e.message ?? 'Failed to load ships');
+    } finally {
+      await sleep(300);
+      setLoading(false);
     }
   };
 
@@ -72,7 +80,15 @@ export default function PoolingPage() {
         <button className="btn btn-primary" onClick={loadShips}>Load Ships</button>
       </div>
 
-      {members.length > 0 && (
+      {loading && (
+        <div className="mb-4 card p-4 space-y-2">
+          <Skeleton className="h-5 w-1/3" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+        </div>
+      )}
+      {!loading && members.length === 0 && <EmptyState title="No ships loaded" message="Load ships to configure a pool." />}
+      {!loading && members.length > 0 && (
         <div className="mb-4 card overflow-auto">
           <table className="min-w-full text-sm">
             <thead>

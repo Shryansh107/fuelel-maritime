@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../infrastructure/api';
 import { useToast } from '../../../shared/toast/ToastProvider';
+import { Skeleton } from '../../../shared/ui/Skeleton';
+import { EmptyState } from '../../../shared/ui/EmptyState';
+import { sleep } from '../../../shared/utils/sleep';
 
 type RouteRow = {
   id: number;
@@ -33,6 +36,7 @@ export default function RoutesPage() {
     } catch (e: any) {
       toast.error(e.message ?? 'Failed to load routes');
     } finally {
+      await sleep(300);
       setLoading(false);
     }
   };
@@ -63,7 +67,16 @@ export default function RoutesPage() {
         <input className="w-28" placeholder="Year" value={filters.year ?? ''} onChange={e => setFilters(f => ({ ...f, year: e.target.value || undefined }))} />
         <button className="btn btn-primary" onClick={load}>Filter</button>
       </div>
-      {loading && <div>Loading…</div>}
+      {loading && (
+        <div className="card p-4 space-y-2">
+          <Skeleton className="h-5 w-1/3" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+        </div>
+      )}
+      {!loading && rows.length === 0 && <EmptyState title="No routes found" message="Try adjusting filters." />}
+      {!loading && rows.length > 0 && (
       <div className="card overflow-auto">
         <table className="min-w-full text-sm">
           <thead>
@@ -98,6 +111,7 @@ export default function RoutesPage() {
           </tbody>
         </table>
       </div>
+      )}
     </div>
   );
 }
