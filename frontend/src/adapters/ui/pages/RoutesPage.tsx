@@ -18,11 +18,18 @@ type RouteRow = {
   isBaseline: boolean;
 };
 
+type FilterOptions = {
+  vesselTypes: string[];
+  fuelTypes: string[];
+  years: number[];
+};
+
 export default function RoutesPage() {
   const [rows, setRows] = useState<RouteRow[]>([]);
   const [loading, setLoading] = useState(false);
   const [filters, setFilters] = useState<{ vesselType?: string; fuelType?: string; year?: string }>({});
   const toast = useToast();
+  const [options, setOptions] = useState<FilterOptions>({ vesselTypes: [], fuelTypes: [], years: [] });
 
   const load = async () => {
     setLoading(true);
@@ -42,6 +49,16 @@ export default function RoutesPage() {
   };
 
   useEffect(() => { load(); }, []);
+  useEffect(() => {
+    (async () => {
+      try {
+        const o = await api.get<FilterOptions>('/routes/filters');
+        setOptions(o);
+      } catch (e: any) {
+        // Non-blocking; filters will stay as text inputs if this fails
+      }
+    })();
+  }, []);
 
   const setBaseline = async (id: number) => {
     const prev = rows;
@@ -61,11 +78,36 @@ export default function RoutesPage() {
   return (
     <div className="p-4">
       <h2 className="mb-4">Routes</h2>
-      <div className="flex gap-2 mb-4">
-        <input className="w-40" placeholder="Vessel Type" value={filters.vesselType ?? ''} onChange={e => setFilters(f => ({ ...f, vesselType: e.target.value || undefined }))} />
-        <input className="w-40" placeholder="Fuel Type" value={filters.fuelType ?? ''} onChange={e => setFilters(f => ({ ...f, fuelType: e.target.value || undefined }))} />
-        <input className="w-28" placeholder="Year" value={filters.year ?? ''} onChange={e => setFilters(f => ({ ...f, year: e.target.value || undefined }))} />
+      <div className="flex flex-wrap items-end gap-2 mb-4">
+        {options.vesselTypes.length > 0 ? (
+          <select className="w-40" value={filters.vesselType ?? ''} onChange={e => setFilters(f => ({ ...f, vesselType: e.target.value || undefined }))}>
+            <option value="">All Vessels</option>
+            {options.vesselTypes.map(v => <option key={v} value={v}>{v}</option>)}
+          </select>
+        ) : (
+          <input className="w-40" placeholder="Vessel Type" value={filters.vesselType ?? ''} onChange={e => setFilters(f => ({ ...f, vesselType: e.target.value || undefined }))} />
+        )}
+
+        {options.fuelTypes.length > 0 ? (
+          <select className="w-40" value={filters.fuelType ?? ''} onChange={e => setFilters(f => ({ ...f, fuelType: e.target.value || undefined }))}>
+            <option value="">All Fuels</option>
+            {options.fuelTypes.map(v => <option key={v} value={v}>{v}</option>)}
+          </select>
+        ) : (
+          <input className="w-40" placeholder="Fuel Type" value={filters.fuelType ?? ''} onChange={e => setFilters(f => ({ ...f, fuelType: e.target.value || undefined }))} />
+        )}
+
+        {options.years.length > 0 ? (
+          <select className="w-28" value={filters.year ?? ''} onChange={e => setFilters(f => ({ ...f, year: e.target.value || undefined }))}>
+            <option value="">All Years</option>
+            {options.years.map(y => <option key={y} value={y}>{y}</option>)}
+          </select>
+        ) : (
+          <input className="w-28" placeholder="Year" value={filters.year ?? ''} onChange={e => setFilters(f => ({ ...f, year: e.target.value || undefined }))} />
+        )}
+
         <button className="btn btn-primary" onClick={load}>Filter</button>
+        <button className="btn btn-ghost" onClick={() => { setFilters({}); load(); }}>Reset</button>
       </div>
       {loading && (
         <div className="card p-4 space-y-2">

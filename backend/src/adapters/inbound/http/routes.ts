@@ -3,6 +3,16 @@ import { prisma } from '../../../infrastructure/db/prisma.js';
 
 export const routesRouter = Router();
 
+routesRouter.get('/filters', async (_req, res) => {
+  const vesselTypesRows = await prisma.route.findMany({ select: { vesselType: true }, distinct: ['vesselType'] });
+  const fuelTypesRows = await prisma.route.findMany({ select: { fuelType: true }, distinct: ['fuelType'] });
+  const yearsRows = await prisma.route.findMany({ select: { year: true }, distinct: ['year'] });
+  const vesselTypes = vesselTypesRows.map(r => r.vesselType).sort();
+  const fuelTypes = fuelTypesRows.map(r => r.fuelType).sort();
+  const years = yearsRows.map(r => r.year).sort((a, b) => a - b);
+  res.json({ vesselTypes, fuelTypes, years });
+});
+
 routesRouter.get('/', async (req, res) => {
   const { vesselType, fuelType, year } = req.query as { vesselType?: string; fuelType?: string; year?: string };
   const where: any = {};
