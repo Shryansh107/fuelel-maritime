@@ -33,23 +33,37 @@ export default function BankingPage() {
   };
 
   const bank = async () => {
+    const amt = Number(amount);
+    if (!adj) {
+      toast.error('Compute CB first');
+      return;
+    }
+    const prev = adj;
+    // optimistic: increase bankedSum and cb_after
+    setAdjusted({ ...adj, bankedSum: adj.bankedSum + amt, cb_after: adj.cb_after + amt });
     try {
-      const amt = Number(amount);
       await api.post('/banking/bank', { shipId, year: Number(year), amount: amt });
-      await loadAdjusted();
       toast.success('Banked successfully');
     } catch (e: any) {
+      setAdjusted(prev);
       toast.error(e.message ?? 'Banking failed');
     }
   };
 
   const apply = async () => {
+    const amt = Number(amount);
+    if (!adj) {
+      toast.error('Compute CB first');
+      return;
+    }
+    const prev = adj;
+    // optimistic: reduce bankedSum and increase cb_after
+    setAdjusted({ ...adj, bankedSum: adj.bankedSum - amt, cb_after: adj.cb_after + amt });
     try {
-      const amt = Number(amount);
       await api.post('/banking/apply', { shipId, year: Number(year), amount: amt });
-      await loadAdjusted();
       toast.success('Applied successfully');
     } catch (e: any) {
+      setAdjusted(prev);
       toast.error(e.message ?? 'Apply failed');
     }
   };

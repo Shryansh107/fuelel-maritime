@@ -40,11 +40,16 @@ export default function RoutesPage() {
   useEffect(() => { load(); }, []);
 
   const setBaseline = async (id: number) => {
+    const prev = rows;
+    // optimistic
+    setRows((curr) => curr.map(r => ({ ...r, isBaseline: r.id === id })));
     try {
       await api.post(`/routes/${id}/baseline`, {});
-      await load();
       toast.success('Baseline updated');
+      // Optionally reconcile in background:
+      // void load();
     } catch (e: any) {
+      setRows(prev);
       toast.error(e.message ?? 'Failed to set baseline');
     }
   };

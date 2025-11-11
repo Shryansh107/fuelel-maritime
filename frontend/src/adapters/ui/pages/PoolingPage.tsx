@@ -13,6 +13,28 @@ export default function PoolingPage() {
   const [result, setResult] = useState<PoolResponse | null>(null);
   const toast = useToast();
 
+  const computeGreedy = () => {
+    const inputs = members.map(m => ({ shipId: m.shipId, cb_before: Number(m.cb_before) }));
+    const surpluses = inputs.filter(m => m.cb_before > 0).sort((a, b) => b.cb_before - a.cb_before);
+    const deficits = inputs.filter(m => m.cb_before < 0).sort((a, b) => a.cb_before - b.cb_before);
+    const afterMap = new Map<string, number>(inputs.map(m => [m.shipId, m.cb_before]));
+    for (const s of surpluses) {
+      let sRemain = afterMap.get(s.shipId)!;
+      for (const d of deficits) {
+        const dRemain = afterMap.get(d.shipId)!;
+        if (sRemain <= 0) break;
+        if (dRemain >= 0) continue;
+        const transfer = Math.min(sRemain, Math.abs(dRemain));
+        sRemain -= transfer;
+        afterMap.set(s.shipId, sRemain);
+        afterMap.set(d.shipId, dRemain + transfer);
+      }
+    }
+    const afterList = inputs.map(m => ({ shipId: m.shipId, cb_before: m.cb_before, cb_after: afterMap.get(m.shipId)! }));
+    const sumAfter = afterList.reduce((acc, m) => acc + m.cb_after, 0);
+    return { afterList, sumAfter };
+  };
+
   const loadShips = async () => {
     try {
       const data = await api.get<AdjustedShip[]>(`/compliance/adjusted-cb?year=${encodeURIComponent(year)}`);
@@ -24,7 +46,10 @@ export default function PoolingPage() {
   };
 
   const createPool = async () => {
-    setResult(null);
+    // optimistic
+    const { afterList, sumAfter } = computeGreedy();
+    const prev = result;
+    setResult({ poolId: -1, year: Number(year), members: afterList, sumAfter });
     try {
       const body = {
         year: Number(year),
@@ -34,6 +59,7 @@ export default function PoolingPage() {
       setResult(resp);
       toast.success('Pool created');
     } catch (e: any) {
+      setResult(prev ?? null);
       toast.error(e.message ?? 'Failed to create pool');
     }
   };
