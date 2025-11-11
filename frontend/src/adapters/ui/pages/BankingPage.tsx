@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { api } from '../../infrastructure/api';
 import { useToast } from '../../../shared/toast/ToastProvider';
+import { Icons } from '../../../shared/icons';
 
 type Adjusted =
   | { shipId: string; year: number; cb_before: number; bankedSum: number; cb_after: number }
@@ -73,17 +74,24 @@ export default function BankingPage() {
   return (
     <div className="p-4">
       <h2 className="mb-4">Banking</h2>
-      <div className="flex flex-wrap gap-2 mb-4">
-        <input className="w-44" placeholder="Ship ID" value={shipId} onChange={e => setShipId(e.target.value)} />
-        <input className="w-28" placeholder="Year" value={year} onChange={e => setYear(e.target.value)} />
-        <input className="w-32" placeholder="Amount" value={amount} onChange={e => setAmount(e.target.value)} />
-        <button className="btn btn-primary" onClick={computeCB}>Compute CB</button>
-        <button className="btn btn-ghost" onClick={loadAdjusted}>Load Adjusted</button>
-        <button className="btn btn-primary" onClick={bank}>Bank</button>
-        <button className="btn btn-primary" onClick={apply}>Apply</button>
+
+      <div className="card p-4 mb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <input className="w-full" placeholder="Ship ID" value={shipId} onChange={e => setShipId(e.target.value)} />
+          <input className="w-full" placeholder="Year" value={year} onChange={e => setYear(e.target.value)} />
+          <input className="w-full" placeholder="Amount" value={amount} onChange={e => setAmount(e.target.value)} />
+          <div className="flex gap-2">
+            <button className="btn btn-primary w-full" onClick={computeCB}><Icons.Calculator className="mr-2" /> Compute</button>
+          </div>
+        </div>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <button className="btn btn-ghost" onClick={loadAdjusted}><Icons.Refresh className="mr-2" /> Load Adjusted</button>
+          <button className="btn btn-primary" onClick={bank}><Icons.Download className="mr-2" /> Bank</button>
+          <button className="btn btn-primary" onClick={apply}><Icons.Upload className="mr-2" /> Apply</button>
+        </div>
       </div>
       {adj && (
-        <div className="card p-3 text-sm">
+        <div className="card p-4 text-sm">
           <div>cb_before: {adj.cb_before.toFixed(2)}</div>
           <div>bankedSum: {adj.bankedSum.toFixed(2)}</div>
           <div>cb_after: {adj.cb_after.toFixed(2)}</div>
