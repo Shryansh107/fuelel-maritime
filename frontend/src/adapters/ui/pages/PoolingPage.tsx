@@ -4,6 +4,10 @@ import { useToast } from '../../../shared/toast/ToastProvider';
 import { Skeleton } from '../../../shared/ui/Skeleton';
 import { EmptyState } from '../../../shared/ui/EmptyState';
 import { sleep } from '../../../shared/utils/sleep';
+import { Card } from '../../../components/ui/card';
+import { Input } from '../../../components/ui/input';
+import { Button } from '../../../components/ui/button';
+import { Table, Thead, Tbody, Tr, Th, Td } from '../../../components/ui/table';
 
 type AdjustedShip = { shipId: string; year: number; cb_before: number; bankedSum: number; cb_after: number };
 type PoolMember = { shipId: string; cb_before: number; cb_after: number };
@@ -76,71 +80,71 @@ export default function PoolingPage() {
     <div className="p-4">
       <h2 className="mb-4">Pooling</h2>
       <div className="flex gap-2 mb-4">
-        <input className="w-28" placeholder="Year" value={year} onChange={e => setYear(e.target.value)} />
-        <button className="btn btn-primary" onClick={loadShips}>Load Ships</button>
+        <Input className="w-28" placeholder="Year" value={year} onChange={e => setYear(e.target.value)} />
+        <Button onClick={loadShips}>Load Ships</Button>
       </div>
 
       {loading && (
-        <div className="mb-4 card p-4 space-y-2">
+        <Card className="mb-4 p-4 space-y-2">
           <Skeleton className="h-5 w-1/3" />
           <Skeleton className="h-10 w-full" />
           <Skeleton className="h-10 w-full" />
-        </div>
+        </Card>
       )}
       {!loading && members.length === 0 && <EmptyState title="No ships loaded" message="Load ships to configure a pool." />}
       {!loading && members.length > 0 && (
-        <div className="mb-4 card overflow-auto">
-          <table className="min-w-full text-sm">
-            <thead>
-              <tr>
-                <th className="p-2">shipId</th>
-                <th className="p-2">cb_before</th>
-              </tr>
-            </thead>
-            <tbody>
+        <Card className="mb-4 overflow-auto">
+          <Table>
+            <Thead>
+              <Tr>
+                <Th>shipId</Th>
+                <Th>cb_before</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
               {members.map((m, i) => (
-                <tr key={m.shipId} className="odd:bg-white even:bg-gray-50">
-                  <td className="p-2">{m.shipId}</td>
-                  <td className="p-2">
-                    <input className="w-40" value={m.cb_before}
+                <Tr key={m.shipId} className="odd:bg-white even:bg-gray-50">
+                  <Td>{m.shipId}</Td>
+                  <Td>
+                    <Input className="w-40" value={m.cb_before}
                       onChange={e => setMembers(curr => curr.map((x, idx) => idx === i ? { ...x, cb_before: e.target.value } : x))}
                     />
-                  </td>
-                </tr>
+                  </Td>
+                </Tr>
               ))}
-            </tbody>
-          </table>
-        </div>
+            </Tbody>
+          </Table>
+        </Card>
       )}
 
       {members.length > 0 && (
-        <button className="btn btn-primary" onClick={createPool}>Create Pool</button>
+        <Button onClick={createPool}>Create Pool</Button>
       )}
 
       {result && (
         <div className="mt-4">
           <div className="text-sm mb-2">Pool #{result.poolId} (year {result.year})</div>
           <div className="text-sm mb-2">Sum After: <span className={result.sumAfter >= 0 ? 'text-green-700' : 'text-red-700'}>{result.sumAfter.toFixed(2)}</span></div>
-          <div className="card overflow-auto">
-            <table className="min-w-full text-sm">
-              <thead>
-                <tr>
-                  <th className="p-2">shipId</th>
-                  <th className="p-2">cb_before</th>
-                  <th className="p-2">cb_after</th>
-                </tr>
-              </thead>
-              <tbody>
+          <Card className="overflow-auto">
+            <Table>
+              <Thead>
+                <Tr>
+                  <Th>shipId</Th>
+                  <Th>cb_before</Th>
+                  <Th>cb_after</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
                 {result.members.map(m => (
-                  <tr key={m.shipId} className="odd:bg-white even:bg-gray-50">
-                    <td className="p-2">{m.shipId}</td>
-                    <td className="p-2">{m.cb_before.toFixed(2)}</td>
-                    <td className="p-2">{m.cb_after.toFixed(2)}</td>
-                  </tr>
+                  <Tr key={m.shipId} className="odd:bg-white even:bg-gray-50">
+                    <Td>{m.shipId}</Td>
+                    <Td>{m.cb_before.toFixed(2)}</Td>
+                    <Td>{m.cb_after.toFixed(2)}</Td>
+                  </Tr>
                 ))}
-              </tbody>
-            </table>
-          </div>
+              </Tbody>
+            </Table>
+          </Card>
         </div>
       )}
     </div>

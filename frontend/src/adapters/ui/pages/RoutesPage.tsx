@@ -4,6 +4,11 @@ import { useToast } from '../../../shared/toast/ToastProvider';
 import { Skeleton } from '../../../shared/ui/Skeleton';
 import { EmptyState } from '../../../shared/ui/EmptyState';
 import { sleep } from '../../../shared/utils/sleep';
+import { Card, CardContent } from '../../../components/ui/card';
+import { Button } from '../../../components/ui/button';
+import { Input } from '../../../components/ui/input';
+import { Select } from '../../../components/ui/select';
+import { Table, Thead, Tbody, Tr, Th, Td } from '../../../components/ui/table';
 
 type RouteRow = {
   id: number;
@@ -80,77 +85,77 @@ export default function RoutesPage() {
       <h2 className="mb-4">Routes</h2>
       <div className="flex flex-wrap items-end gap-2 mb-4">
         {options.vesselTypes.length > 0 ? (
-          <select className="w-40" value={filters.vesselType ?? ''} onChange={e => setFilters(f => ({ ...f, vesselType: e.target.value || undefined }))}>
+          <Select className="w-40" value={filters.vesselType ?? ''} onChange={e => setFilters(f => ({ ...f, vesselType: e.target.value || undefined }))}>
             <option value="">All Vessels</option>
             {options.vesselTypes.map(v => <option key={v} value={v}>{v}</option>)}
-          </select>
+          </Select>
         ) : (
-          <input className="w-40" placeholder="Vessel Type" value={filters.vesselType ?? ''} onChange={e => setFilters(f => ({ ...f, vesselType: e.target.value || undefined }))} />
+          <Input className="w-40" placeholder="Vessel Type" value={filters.vesselType ?? ''} onChange={e => setFilters(f => ({ ...f, vesselType: e.target.value || undefined }))} />
         )}
 
         {options.fuelTypes.length > 0 ? (
-          <select className="w-40" value={filters.fuelType ?? ''} onChange={e => setFilters(f => ({ ...f, fuelType: e.target.value || undefined }))}>
+          <Select className="w-40" value={filters.fuelType ?? ''} onChange={e => setFilters(f => ({ ...f, fuelType: e.target.value || undefined }))}>
             <option value="">All Fuels</option>
             {options.fuelTypes.map(v => <option key={v} value={v}>{v}</option>)}
-          </select>
+          </Select>
         ) : (
-          <input className="w-40" placeholder="Fuel Type" value={filters.fuelType ?? ''} onChange={e => setFilters(f => ({ ...f, fuelType: e.target.value || undefined }))} />
+          <Input className="w-40" placeholder="Fuel Type" value={filters.fuelType ?? ''} onChange={e => setFilters(f => ({ ...f, fuelType: e.target.value || undefined }))} />
         )}
 
         {options.years.length > 0 ? (
-          <select className="w-28" value={filters.year ?? ''} onChange={e => setFilters(f => ({ ...f, year: e.target.value || undefined }))}>
+          <Select className="w-28" value={filters.year ?? ''} onChange={e => setFilters(f => ({ ...f, year: e.target.value || undefined }))}>
             <option value="">All Years</option>
             {options.years.map(y => <option key={y} value={y}>{y}</option>)}
-          </select>
+          </Select>
         ) : (
-          <input className="w-28" placeholder="Year" value={filters.year ?? ''} onChange={e => setFilters(f => ({ ...f, year: e.target.value || undefined }))} />
+          <Input className="w-28" placeholder="Year" value={filters.year ?? ''} onChange={e => setFilters(f => ({ ...f, year: e.target.value || undefined }))} />
         )}
 
-        <button className="btn btn-primary" onClick={load}>Filter</button>
-        <button className="btn btn-ghost" onClick={() => { setFilters({}); load(); }}>Reset</button>
+        <Button onClick={load}>Filter</Button>
+        <Button variant="secondary" onClick={() => { setFilters({}); load(); }}>Reset</Button>
       </div>
       {loading && (
-        <div className="card p-4 space-y-2">
+        <Card className="p-4 space-y-2">
           <Skeleton className="h-5 w-1/3" />
           <Skeleton className="h-10 w-full" />
           <Skeleton className="h-10 w-full" />
           <Skeleton className="h-10 w-full" />
-        </div>
+        </Card>
       )}
       {!loading && rows.length === 0 && <EmptyState title="No routes found" message="Try adjusting filters." />}
       {!loading && rows.length > 0 && (
-      <div className="card overflow-auto">
-        <table className="min-w-full text-sm">
-          <thead>
-            <tr>
-              <th className="p-2">routeId</th>
-              <th className="p-2">vesselType</th>
-              <th className="p-2">fuelType</th>
-              <th className="p-2">year</th>
-              <th className="p-2">ghgIntensity</th>
-              <th className="p-2">fuelConsumption (t)</th>
-              <th className="p-2">distance (km)</th>
-              <th className="p-2">totalEmissions (t)</th>
-              <th className="p-2">actions</th>
-            </tr>
-          </thead>
-          <tbody>
+      <Card className="overflow-auto">
+        <Table>
+          <Thead>
+            <Tr>
+              <Th>routeId</Th>
+              <Th>vesselType</Th>
+              <Th>fuelType</Th>
+              <Th>year</Th>
+              <Th>ghgIntensity</Th>
+              <Th>fuelConsumption (t)</Th>
+              <Th>distance (km)</Th>
+              <Th>totalEmissions (t)</Th>
+              <Th>actions</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
             {rows.map(r => (
-              <tr key={r.id} className="odd:bg-white even:bg-gray-50">
-                <td className="p-2">{r.routeId}</td>
-                <td className="p-2">{r.vesselType}</td>
-                <td className="p-2">{r.fuelType}</td>
-                <td className="p-2">{r.year}</td>
-                <td className="p-2">{r.ghgIntensity.toFixed(2)}</td>
-                <td className="p-2">{r.fuelConsumption.toFixed(0)}</td>
-                <td className="p-2">{r.distance.toFixed(0)}</td>
-                <td className="p-2">{r.totalEmissions.toFixed(0)}</td>
-                <td className="p-2"><button className={`btn w-32 ${r.isBaseline ? 'btn-success' : 'btn-ghost'}`} onClick={() => setBaseline(r.id)}>{r.isBaseline ? 'Baseline' : 'Set Baseline'}</button></td>
-              </tr>
+              <Tr key={r.id} className="odd:bg-white even:bg-gray-50">
+                <Td>{r.routeId}</Td>
+                <Td>{r.vesselType}</Td>
+                <Td>{r.fuelType}</Td>
+                <Td>{r.year}</Td>
+                <Td>{r.ghgIntensity.toFixed(2)}</Td>
+                <Td>{r.fuelConsumption.toFixed(0)}</Td>
+                <Td>{r.distance.toFixed(0)}</Td>
+                <Td>{r.totalEmissions.toFixed(0)}</Td>
+                <Td><Button className="w-32" variant={r.isBaseline ? 'success' : 'secondary'} onClick={() => setBaseline(r.id)}>{r.isBaseline ? 'Baseline' : 'Set Baseline'}</Button></Td>
+              </Tr>
             ))}
-          </tbody>
-        </table>
-      </div>
+          </Tbody>
+        </Table>
+      </Card>
       )}
     </div>
   );

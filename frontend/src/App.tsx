@@ -5,6 +5,7 @@ import BankingPage from './adapters/ui/pages/BankingPage'
 import PoolingPage from './adapters/ui/pages/PoolingPage'
 import { ToastProvider } from './shared/toast/ToastProvider'
 import { Icons } from './shared/icons'
+import { Button } from './components/ui/button'
 
 type TabKey = 'routes' | 'compare' | 'banking' | 'pooling'
 
@@ -17,20 +18,20 @@ function App() {
         <aside className="w-60 border-r bg-white">
           <div className="px-4 py-4 border-b">
             <h1 className="text-lg font-semibold">FuelEU Dashboard</h1>
-          </div>
+      </div>
           <nav className="p-2 flex flex-col gap-1">
-            <button className={`btn w-full justify-start ${tab === 'routes' ? 'btn-primary' : 'btn-ghost'}`} onClick={() => setTab('routes')}>
+            <Button className="w-full justify-start" variant={tab === 'routes' ? 'default' : 'secondary'} onClick={() => setTab('routes')}>
               <Icons.Map className="mr-2" /> Routes
-            </button>
-            <button className={`btn w-full justify-start ${tab === 'compare' ? 'btn-primary' : 'btn-ghost'}`} onClick={() => setTab('compare')}>
+            </Button>
+            <Button className="w-full justify-start" variant={tab === 'compare' ? 'default' : 'secondary'} onClick={() => setTab('compare')}>
               <Icons.ChartBar className="mr-2" /> Compare
-            </button>
-            <button className={`btn w-full justify-start ${tab === 'banking' ? 'btn-primary' : 'btn-ghost'}`} onClick={() => setTab('banking')}>
+            </Button>
+            <Button className="w-full justify-start" variant={tab === 'banking' ? 'default' : 'secondary'} onClick={() => setTab('banking')}>
               <Icons.Bank className="mr-2" /> Banking
-            </button>
-            <button className={`btn w-full justify-start ${tab === 'pooling' ? 'btn-primary' : 'btn-ghost'}`} onClick={() => setTab('pooling')}>
+            </Button>
+            <Button className="w-full justify-start" variant={tab === 'pooling' ? 'default' : 'secondary'} onClick={() => setTab('pooling')}>
               <Icons.Users className="mr-2" /> Pooling
-            </button>
+            </Button>
           </nav>
         </aside>
 

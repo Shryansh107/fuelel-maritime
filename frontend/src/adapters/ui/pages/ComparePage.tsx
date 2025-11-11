@@ -4,6 +4,8 @@ import { useToast } from '../../../shared/toast/ToastProvider';
 import { Skeleton } from '../../../shared/ui/Skeleton';
 import { EmptyState } from '../../../shared/ui/EmptyState';
 import { sleep } from '../../../shared/utils/sleep';
+import { Card } from '../../../components/ui/card';
+import { Table, Thead, Tbody, Tr, Th, Td } from '../../../components/ui/table';
 
 type RouteRow = {
   id: number;
@@ -41,41 +43,41 @@ export default function ComparePage() {
     <div className="p-4">
       <h2 className="mb-4">Compare</h2>
       {loading && (
-        <div className="card p-4 space-y-2">
+        <Card className="p-4 space-y-2">
           <Skeleton className="h-5 w-1/2" />
           <Skeleton className="h-10 w-full" />
           <Skeleton className="h-10 w-full" />
           <Skeleton className="h-10 w-full" />
-        </div>
+        </Card>
       )}
       {!loading && data && data.comparisons.length === 0 && <EmptyState title="No comparison data" message="Set a baseline or add routes." />}
       {!loading && data && data.comparisons.length > 0 && (
         <div className="space-y-4">
           <div className="text-sm text-gray-700">Target: {data.target.toFixed(4)} gCO₂e/MJ</div>
-          <div className="card overflow-auto">
-            <table className="min-w-full text-sm">
-              <thead>
-                <tr>
-                  <th className="p-2">routeId</th>
-                  <th className="p-2">baseline ghgIntensity</th>
-                  <th className="p-2">comparison ghgIntensity</th>
-                  <th className="p-2">% diff</th>
-                  <th className="p-2">compliant</th>
-                </tr>
-              </thead>
-              <tbody>
+          <Card className="overflow-auto">
+            <Table>
+              <Thead>
+                <Tr>
+                  <Th>routeId</Th>
+                  <Th>baseline ghgIntensity</Th>
+                  <Th>comparison ghgIntensity</Th>
+                  <Th>% diff</Th>
+                  <Th>compliant</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
                 {data.comparisons.map(c => (
-                  <tr key={c.route.id} className="odd:bg-white even:bg-gray-50">
-                    <td className="p-2">{c.route.routeId}</td>
-                    <td className="p-2">{data.baseline?.ghgIntensity.toFixed(2) ?? '-'}</td>
-                    <td className="p-2">{c.route.ghgIntensity.toFixed(2)}</td>
-                    <td className="p-2">{c.percentDiff.toFixed(2)}%</td>
-                    <td className="p-2">{c.compliant ? '✅' : '❌'}</td>
-                  </tr>
+                  <Tr key={c.route.id} className="odd:bg-white even:bg-gray-50">
+                    <Td>{c.route.routeId}</Td>
+                    <Td>{data.baseline?.ghgIntensity.toFixed(2) ?? '-'}</Td>
+                    <Td>{c.route.ghgIntensity.toFixed(2)}</Td>
+                    <Td>{c.percentDiff.toFixed(2)}%</Td>
+                    <Td>{c.compliant ? '✅' : '❌'}</Td>
+                  </Tr>
                 ))}
-              </tbody>
-            </table>
-          </div>
+              </Tbody>
+            </Table>
+          </Card>
         </div>
       )}
     </div>
