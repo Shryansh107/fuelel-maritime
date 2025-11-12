@@ -174,18 +174,6 @@ function ChartBaselineVsRoutes({ baseline, items }: { baseline: number | null; i
               <text x={groupX + (baseline !== null ? (barWidth + gap) : 0) + barWidth / 2} y={height - padding + 12} textAnchor="middle" fontSize="10" fill="#374151">
                 {item.id}
               </text>
-              {/* numeric value labels (route only to reduce clutter) */}
-              {routeH > 0 && (
-                <text
-                  x={groupX + (baseline !== null ? barWidth + gap : 0) + barWidth / 2}
-                  y={Math.max(padding + 12, routeY - 6)}
-                  textAnchor="middle"
-                  fontSize="11"
-                  fill="#111827"
-                >
-                  {item.value.toFixed(2)}
-                </text>
-              )}
             </g>
           );
         })}
