@@ -36,6 +36,45 @@ src/
 ## Requirements Coverage
 See `plan.md` for milestone tracking and `AGENT_WORKFLOW.md` for AI usage.
 
+## Features
+- Frontend
+  - Left sidebar dashboard with tabs: Routes, Compare, Banking, Pooling
+  - Tailwind v4 styling, Inter font, responsive layout
+  - Toasts (bottom-right), skeleton loaders, empty states
+  - Dynamic filter selects:
+    - Routes: vesselType, fuelType, year from `/routes/filters`
+    - Banking: shipId, year from `/banking/filters`
+    - Pooling: year from `/routes/filters`
+  - Optimistic UI:
+    - Set Baseline button updates instantly
+    - Banking bank/apply previews update instantly
+    - Pooling previews `cb_after` and validates rules client-side
+  - Compare:
+    - Capitalized headers
+    - Target pill (black/white)
+    - Bar chart (baseline vs routes) that resizes to available space
+
+- Backend
+  - Hexagonal ports/adapters; Express inbound HTTP; Prisma outbound Postgres
+  - Routes: Get all, set baseline, comparison
+  - Compliance: Compute CB and adjusted CB
+  - Banking: Records, bank, apply, filters
+  - Pools: Create pool with validations and greedy allocation
+  - Prisma schema + seeds for five routes (one baseline)
+
+## API Overview
+- `GET /routes` — list with optional query `vesselType`, `fuelType`, `year`
+- `GET /routes/filters` — `{ vesselTypes, fuelTypes, years }`
+- `POST /routes/:id/baseline` — set baseline
+- `GET /routes/comparison` — `{ baseline, comparisons[], target }`
+- `GET /compliance/cb?shipId&year` — compute/store CB
+- `GET /compliance/adjusted-cb?shipId&year` — adjusted CB (banked applied)
+- `GET /banking/filters` — `{ shipIds, years }`
+- `GET /banking/records?shipId&year` — bank/apply entries
+- `POST /banking/bank` — body `{ shipId, year, amount }`
+- `POST /banking/apply` — body `{ shipId, year, amount }`
+- `POST /pools` — body `{ year, members: [{ shipId, cb_before }] }`
+
 ## Setup
 Prerequisites:
 - Node.js 20+
@@ -79,6 +118,9 @@ npm install
 npm run dev
 ```
 
+### Tailwind v4 note
+This project uses Tailwind v4. PostCSS config is at `frontend/postcss.config.js` and uses `@tailwindcss/postcss` + `autoprefixer`. Global styles and CSS theme tokens live in `src/index.css`.
+
 ## Scripts (summary)
 - Backend:
   - `npm run prisma:migrate` – run migrations
@@ -99,6 +141,11 @@ npm run dev
   ```
   Integration tests mock Prisma to avoid a live DB; unit tests cover CB math.
 - Frontend: placeholder (can be added with Vitest/RTL as needed).
+
+## Troubleshooting
+- Postgres port in use: stop local Postgres or change docker-compose port mapping.
+- Tailwind not applying: ensure `frontend/postcss.config.js` has `@tailwindcss/postcss` and restart dev server.
+- CORS/API URL: set `VITE_API_URL=http://localhost:4000` in `frontend/.env` if hosting differs.
 
 ## Notes
 - In conflicts between earlier chat guidance and the brief, the brief takes precedence.
