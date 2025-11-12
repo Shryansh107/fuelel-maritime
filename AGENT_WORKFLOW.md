@@ -17,6 +17,7 @@
 - Frontend wiring:
   - Prompt: “Add tabs, Tailwind v4, toast provider, skeletons, dynamic filters, optimistic UI; comparison chart; sidebar with icons.”
   - Output: Pages for Routes/Compare/Banking/Pooling, shadcn-style ui primitives, toast, skeletons, chart.
+- Full prompt log: see [`cursor_project_setup_and_planning_instr.md`](./cursor_project_setup_and_planning_instr.md) for the exact prompts used during development.
 
 ## Validation / Corrections
 - Fixed prisma upsert by adding `@@unique([shipId, year])` in `ship_compliance`.
