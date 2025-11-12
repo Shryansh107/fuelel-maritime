@@ -1,4 +1,8 @@
-# FuelEU Maritime — Compliance Platform (Assignment)
+# FuelEU Maritime — Compliance Platform 
+
+
+https://github.com/user-attachments/assets/c24a7c72-ecd2-4ad4-b538-38efba46b8aa
+
 
 This repository implements a minimal Fuel EU Maritime compliance module per the assignment brief, using a hexagonal architecture across frontend and backend.
 
